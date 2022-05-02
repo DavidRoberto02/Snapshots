@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import com.example.snapshots.databinding.FragmentAddBinding
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.components.Dependency.required
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
@@ -40,7 +41,14 @@ class AddFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        mBinding.btnPost.setOnClickListener { postSnapshot() }
+        mBinding.btnPost.setOnClickListener {
+            if (mBinding.etTitle.text!!.isNotEmpty()){
+                postSnapshot()
+            } else {
+                mBinding.etTitle.requestFocus()
+                mBinding.etTitle.error = getString(R.string.required)
+            }
+        }
 
         mBinding.btnSelect.setOnClickListener { openGallery() }
 
@@ -59,19 +67,21 @@ class AddFragment : Fragment() {
 
         val storageReference = mStorageReference.child(PATH_SNAPSHOT)
             .child(FirebaseAuth.getInstance().currentUser!!.uid).child(key)
-        if (mPhotoSelectedUri != null){
+        if (mPhotoSelectedUri != null) {
             storageReference.putFile(mPhotoSelectedUri!!)
                 .addOnProgressListener {
-                    val progress = (100 * it.bytesTransferred/it.totalByteCount).toDouble()
+                    val progress = (100 * it.bytesTransferred / it.totalByteCount).toDouble()
                     mBinding.progressBar.progress = progress.toInt()
-                    mBinding.tvMessage.text ="$progress%"
+                    mBinding.tvMessage.text = "$progress%"
                 }
-                .addOnCompleteListener{
+                .addOnCompleteListener {
                     mBinding.progressBar.visibility = View.INVISIBLE
                 }
                 .addOnSuccessListener {
-                    Snackbar.make(mBinding.root, "Instantanea publicada",
-                        Snackbar.LENGTH_SHORT)
+                    Snackbar.make(
+                        mBinding.root, R.string.instantanea_publicada,
+                        Snackbar.LENGTH_SHORT
+                    )
                         .show()
                     it.storage.downloadUrl.addOnSuccessListener {
                         saveSnapshot(key, it.toString(), mBinding.etTitle.text.toString().trim())
@@ -79,24 +89,26 @@ class AddFragment : Fragment() {
                         mBinding.tvMessage.text = getString(R.string.post_message_title)
                     }
                 }
-                .addOnFailureListener{
-                    Snackbar.make(mBinding.root, "No se pudo subir, intente mas tarde.",
-                        Snackbar.LENGTH_SHORT)
+                .addOnFailureListener {
+                    Snackbar.make(
+                        mBinding.root, R.string.instantanea_fallida,
+                        Snackbar.LENGTH_SHORT
+                    )
                         .show()
                 }
 
         }
     }
 
-    private fun saveSnapshot(key: String, url: String, title: String){
+    private fun saveSnapshot(key: String, url: String, title: String) {
         val snapshot = Snapshot(title = title, photoUrl = url)
         mDatabaseReference.child(key).setValue(snapshot)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK){
-            if (requestCode == RC_GALLERY){
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == RC_GALLERY) {
                 mPhotoSelectedUri = data?.data
                 mBinding.imgPhoto.setImageURI(mPhotoSelectedUri)
                 mBinding.tilTitle.visibility = View.VISIBLE

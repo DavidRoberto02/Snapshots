@@ -18,12 +18,13 @@ import com.example.snapshots.databinding.ItemSnapshotBinding
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.firebase.ui.database.SnapshotParser
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 
 
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment() , HomeAux {
 
     private lateinit var mBinding: FragmentHomeBinding
 
@@ -115,8 +116,16 @@ class HomeFragment : Fragment() {
     }
 
     private fun deleteSnapshot(snapshot: Snapshot){
-        val databaseReference = FirebaseDatabase.getInstance().reference.child("snapshots")
-        databaseReference.child(snapshot.id).removeValue()
+        //alertDialog
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.dialog_delete_snapshot)
+            .setPositiveButton(R.string.dialog_delete_confirm) { _, _, ->
+            val databaseReference = FirebaseDatabase.getInstance().reference.child("snapshots")
+                databaseReference.child(snapshot.id).removeValue()
+
+            }
+            .setNegativeButton(R.string.dialog_delete_cancel, null)
+            .show()
     }
 
     private fun setLike(snapshot: Snapshot, checked: Boolean){
@@ -140,6 +149,10 @@ class HomeFragment : Fragment() {
                 setLike(snapshot, checked)
             }
         }
+    }
+
+    override fun goToTop() {
+        mBinding.recyclerView.smoothScrollToPosition(0)
     }
 
 }

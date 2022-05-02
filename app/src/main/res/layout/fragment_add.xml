@@ -22,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/common_padding_min"
-        android:text="Publicar"
+        android:text="@string/submit_button_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/progressBar" />
 
@@ -43,7 +43,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/common_padding_min"
-        android:hint="titulo de la instantanea"
+        android:hint="@string/title_instantanea"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -64,7 +64,8 @@
         app:layout_constraintDimensionRatio="H, 4:3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tilTitle" />
+        app:layout_constraintTop_toBottomOf="@id/tilTitle"
+        android:contentDescription="@string/description_image" />
 
     <ImageButton
         android:id="@+id/btnSelect"
@@ -75,7 +76,8 @@
         app:layout_constraintStart_toStartOf="@+id/imgPhoto"
         app:layout_constraintEnd_toEndOf="@+id/imgPhoto"
         app:layout_constraintTop_toTopOf="@id/imgPhoto"
-        app:layout_constraintBottom_toBottomOf="@id/imgPhoto"/>
+        app:layout_constraintBottom_toBottomOf="@id/imgPhoto"
+        android:contentDescription="@string/button_image_description" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

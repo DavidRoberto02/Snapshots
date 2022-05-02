@@ -7,4 +7,17 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="post_message_title">Seleccione una imagen</string>
     <string name="post_message_valid_title">Por favor, agrega un titulo</string>
+    <string name="title_instantanea">titulo de la instantanea</string>
+    <string name="submit_button_text">Publicar</string>
+    <string name="signOut">Cerrar sesion</string>
+    <string name="welcome_login_success">Bienvenido</string>
+    <string name="signOut_profile">Hasta pronto...</string>
+    <string name="instantanea_publicada">Instantanea publicada</string>
+    <string name="instantanea_fallida">No se pudo subir, intente mas tarde.</string>
+    <string name="description_image">Imagen del snapshot</string>
+    <string name="button_image_description">Boton para subir la imagen</string>
+    <string name="dialog_delete_snapshot">Desea eliminar el snapshot?</string>
+    <string name="dialog_delete_confirm">Eliminar</string>
+    <string name="dialog_delete_cancel">Cancelar</string>
+    <string name="required">Requerido!</string>
 </resources>

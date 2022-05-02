@@ -92,6 +92,18 @@ class MainActivity : AppCompatActivity() {
                 else -> false
             }
         }
+
+        mBinding.bottomNav.setOnItemReselectedListener {
+            when (it.itemId) {
+                R.id.action_home -> {
+                    mFragmentManager.beginTransaction().hide(mActiveFragment).show(homeFragment)
+                        .commit()
+                    mActiveFragment = homeFragment
+                    (homeFragment as HomeAux).goToTop()
+                    true
+                }
+            }
+        }
     }
 
     override fun onResume() {
@@ -108,7 +120,7 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == RC_SIGN_IN){
             if (resultCode == RESULT_OK){
-                Toast.makeText(this, "Bienvenido...", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, R.string.welcome_login_success, Toast.LENGTH_SHORT).show()
             } else {
                 if (IdpResponse.fromResultIntent(data) == null){
                     finish()
@@ -117,4 +129,5 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
+
 }

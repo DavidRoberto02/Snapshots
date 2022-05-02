@@ -36,7 +36,7 @@ class ProfileFragment : Fragment() {
         context?.let {
             AuthUI.getInstance().signOut(it)
                 .addOnCompleteListener {
-                    Toast.makeText(context, "Hasta pronto...", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, R.string.signOut_profile, Toast.LENGTH_SHORT).show()
                 }
         }
     }
