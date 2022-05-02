@@ -22,9 +22,10 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
 
 
-class HomeFragment : Fragment() , HomeAux {
+class HomeFragment : Fragment(), HomeAux {
 
     private lateinit var mBinding: FragmentHomeBinding
 
@@ -45,13 +46,13 @@ class HomeFragment : Fragment() , HomeAux {
         val query = FirebaseDatabase.getInstance().reference.child("snapshots")
 
         val options =
-        FirebaseRecyclerOptions.Builder<Snapshot>().setQuery(query, SnapshotParser {
-            val snapshot = it.getValue(Snapshot::class.java)
-            snapshot!!.id = it.key!!
-            snapshot
-        }).build()
+            FirebaseRecyclerOptions.Builder<Snapshot>().setQuery(query, SnapshotParser {
+                val snapshot = it.getValue(Snapshot::class.java)
+                snapshot!!.id = it.key!!
+                snapshot
+            }).build()
 
-        mFirebaseAdapter = object : FirebaseRecyclerAdapter<Snapshot, SnapshotHolder>(options){
+        mFirebaseAdapter = object : FirebaseRecyclerAdapter<Snapshot, SnapshotHolder>(options) {
             private lateinit var mContext: Context
 
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SnapshotHolder {
@@ -65,7 +66,7 @@ class HomeFragment : Fragment() , HomeAux {
             override fun onBindViewHolder(holder: SnapshotHolder, position: Int, model: Snapshot) {
                 val snapshot = getItem(position)
 
-                with(holder){
+                with(holder) {
                     setListener(snapshot)
 
                     binding.tvTitle.text = snapshot.title
@@ -115,22 +116,21 @@ class HomeFragment : Fragment() , HomeAux {
         mFirebaseAdapter.stopListening()
     }
 
-    private fun deleteSnapshot(snapshot: Snapshot){
+    private fun deleteSnapshot(snapshot: Snapshot) {
         //alertDialog
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.dialog_delete_snapshot)
-            .setPositiveButton(R.string.dialog_delete_confirm) { _, _, ->
-            val databaseReference = FirebaseDatabase.getInstance().reference.child("snapshots")
+            .setPositiveButton(R.string.dialog_delete_confirm) { _, _ ->
+                val databaseReference = FirebaseDatabase.getInstance().reference.child("snapshots")
                 databaseReference.child(snapshot.id).removeValue()
-
             }
             .setNegativeButton(R.string.dialog_delete_cancel, null)
             .show()
     }
 
-    private fun setLike(snapshot: Snapshot, checked: Boolean){
+    private fun setLike(snapshot: Snapshot, checked: Boolean) {
         val databaseReference = FirebaseDatabase.getInstance().reference.child("snapshots")
-        if (checked){
+        if (checked) {
             databaseReference.child(snapshot.id).child("likeList")
                 .child(FirebaseAuth.getInstance().currentUser!!.uid).setValue(checked)
         } else {
@@ -145,7 +145,7 @@ class HomeFragment : Fragment() , HomeAux {
         fun setListener(snapshot: Snapshot) {
             binding.btnDelete.setOnClickListener { deleteSnapshot(snapshot) }
 
-            binding.cbLike.setOnCheckedChangeListener{ compoundButton, checked ->
+            binding.cbLike.setOnCheckedChangeListener { compoundButton, checked ->
                 setLike(snapshot, checked)
             }
         }

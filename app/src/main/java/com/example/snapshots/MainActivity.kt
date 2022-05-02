@@ -1,21 +1,19 @@
 package com.example.snapshots
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.example.snapshots.databinding.ActivityMainBinding
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.ktx.Firebase
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
-    private val RC_SIGN_IN = 12
     private lateinit var mBinding: ActivityMainBinding
 
     private lateinit var  mActiveFragment: Fragment
@@ -23,6 +21,16 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var mAuthListener: FirebaseAuth.AuthStateListener
     private var mFirebaseAuth: FirebaseAuth? = null
+
+    private val authResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result ->
+        if (result.resultCode == RESULT_OK){
+            Toast.makeText(this, R.string.welcome_login_success, Toast.LENGTH_SHORT).show()
+        } else {
+            if (IdpResponse.fromResultIntent(result.data) == null){
+                finish()
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,13 +46,15 @@ class MainActivity : AppCompatActivity() {
         mAuthListener = FirebaseAuth.AuthStateListener {
             val user = it.currentUser
             if (user == null){
-                startActivityForResult(AuthUI.getInstance().createSignInIntentBuilder()
-                    .setIsSmartLockEnabled(false)
-                    .setAvailableProviders(
-                        Arrays.asList(AuthUI.IdpConfig.EmailBuilder().build(),
-                        AuthUI.IdpConfig.GoogleBuilder().build())
-                    )
-                    .build(), RC_SIGN_IN)
+                authResult.launch(
+                    AuthUI.getInstance().createSignInIntentBuilder()
+                        .setIsSmartLockEnabled(false)
+                        .setAvailableProviders(
+                            Arrays.asList(AuthUI.IdpConfig.EmailBuilder().build(),
+                                AuthUI.IdpConfig.GoogleBuilder().build())
+                        )
+                        .build()
+                )
             }
         }
     }
@@ -77,17 +87,14 @@ class MainActivity : AppCompatActivity() {
                 R.id.action_home -> {
                     mFragmentManager.beginTransaction().hide(mActiveFragment).show(homeFragment).commit()
                     mActiveFragment = homeFragment
-                    true
                 }
                 R.id.action_add -> {
                     mFragmentManager.beginTransaction().hide(mActiveFragment).show(addFragment).commit()
                     mActiveFragment = addFragment
-                    true
                 }
                 R.id.action_profile -> {
                     mFragmentManager.beginTransaction().hide(mActiveFragment).show(profileFragment).commit()
                     mActiveFragment = profileFragment
-                    true
                 }
                 else -> false
             }
@@ -102,6 +109,21 @@ class MainActivity : AppCompatActivity() {
                     (homeFragment as HomeAux).goToTop()
                     true
                 }
+                R.id.action_profile -> {
+                    mFragmentManager.beginTransaction().hide(mActiveFragment).show(profileFragment)
+                        .commit()
+                    mActiveFragment = profileFragment
+                    (homeFragment as HomeAux).goToTop()
+                    true
+                }
+                R.id.action_add -> {
+                    mFragmentManager.beginTransaction().hide(mActiveFragment).show(addFragment)
+                        .commit()
+                    mActiveFragment = addFragment
+                    (homeFragment as HomeAux).goToTop()
+                    true
+                }
+                else -> false
             }
         }
     }
@@ -116,18 +138,5 @@ class MainActivity : AppCompatActivity() {
         mFirebaseAuth?.removeAuthStateListener(mAuthListener)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == RC_SIGN_IN){
-            if (resultCode == RESULT_OK){
-                Toast.makeText(this, R.string.welcome_login_success, Toast.LENGTH_SHORT).show()
-            } else {
-                if (IdpResponse.fromResultIntent(data) == null){
-                    finish()
-                }
-            }
-        }
-
-    }
 
 }
