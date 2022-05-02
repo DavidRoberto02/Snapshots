@@ -1,5 +1,6 @@
 package com.example.snapshots
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.text.Layout
@@ -69,9 +70,11 @@ class HomeFragment : Fragment() {
                 }
             }
 
+            @SuppressLint("NotifyDataSetChanged") //error intetno firebas ui 8.0.0
             override fun onDataChanged() {
                 super.onDataChanged()
                 mBinding.progressBar.visibility = View.GONE
+                notifyDataSetChanged()
             }
 
             override fun onError(error: DatabaseError) {
